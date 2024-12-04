@@ -28,8 +28,8 @@
 
 1. Склонируйте репозиторий:
    ```bash
-   git clone https://github.com/savinleonid/Sprint_1.git
-   cd Sprint_1
+   git clone https://github.com/savinleonid/StockAnalyzer.git
+   cd StockAnalyzer
    ```
 2. Создайте и активируйте виртуальную среду:
     ```bash
