@@ -18,20 +18,38 @@ def main():
     """
     print(main.__doc__)  # print documentation
 
-    ticker = input("Введите тикер акции (например, «AAPL» для Apple Inc):»")
-    period = input("Введите период для данных (например, '1mo' для одного месяца): ")
+    # Получение данных от пользователя
+    ticker = input("Введите тикер акции (например, «AAPL» для Apple Inc): ").strip().upper()
+    period = input("Введите период для данных (например, '1mo' для одного месяца): ").strip().lower()
 
-    # Fetch stock data
-    stock_data = dd.fetch_stock_data(ticker, period)
+    try:
+        # Загрузка данных акций
+        stock_data = dd.fetch_stock_data(ticker, period)
 
-    # Add moving average to the data
-    stock_data = dd.add_moving_average(stock_data)
+        # Проверка, что данные не пусты
+        if stock_data.empty:
+            print(f"Данные для тикера '{ticker}' за период '{period}' не найдены. Проверьте ввод.")
+            return
+    except Exception as e:
+        print(f"Ошибка загрузки данных: {e}")
+        return
 
-    # Display calculated moving average
-    dd.calculate_and_display_average_price(stock_data)
+    try:
+        # Добавление скользящего среднего
+        stock_data = dd.add_moving_average(stock_data)
 
-    # Plot the data
-    dplt.create_and_save_plot(stock_data, ticker, period)
+        # Вывод средней цены
+        dd.calculate_and_display_average_price(stock_data)
+
+        # Уведомление о сильных колебаниях
+        dd.notify_if_strong_fluctuations(stock_data, 5.0)
+
+        # Построение графика и сохранение
+        filename = f"{ticker}_{period}_stock_chart.png"
+        dplt.create_and_save_plot(stock_data, ticker, period, filename)
+    except Exception as e:
+        print(f"Ошибка обработки данных: {e}")
+        return
 
 
 if __name__ == "__main__":
