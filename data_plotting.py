@@ -1,8 +1,17 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from pandas import DataFrame
 
 
-def create_and_save_plot(data, ticker, period, filename=None):
+def create_and_save_plot(data: DataFrame, ticker: str, period: str, filename: str = None):
+    """
+    Creates and plots graph for ticker in given period and saves in PNG format.
+    :param data: Dataframe
+    :param ticker: str
+    :param period: str
+    :param filename: str
+    :return: None
+    """
     plt.figure(figsize=(10, 6))
 
     if 'Date' not in data:
@@ -24,6 +33,7 @@ def create_and_save_plot(data, ticker, period, filename=None):
     plt.ylabel("Цена")
     plt.legend()
 
+    # standard naming if not provided
     if filename is None:
         filename = f"{ticker}_{period}_stock_price_chart.png"
 
