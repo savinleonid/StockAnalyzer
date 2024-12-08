@@ -47,6 +47,10 @@ def main():
         # Построение графика и сохранение
         filename = f"{ticker}_{period}_stock_chart.png"
         dplt.create_and_save_plot(stock_data, ticker, period, filename)
+
+        # Экспорт данных в CSV
+        csv_filename = f"{ticker}_{period}_data.csv"
+        dd.export_data_to_csv(stock_data, csv_filename)
     except Exception as e:
         print(f"Ошибка обработки данных: {e}")
         return

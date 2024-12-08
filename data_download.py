@@ -3,6 +3,22 @@ from pandas import DataFrame
 import pandas as pd
 
 
+def export_data_to_csv(data: DataFrame, filename: str = "stock_data.csv"):
+    """
+    Exports the given DataFrame to a CSV file.
+
+    :param data: DataFrame: The stock data to export.
+    :param filename: str: Name of the CSV file to save data (default: 'stock_data.csv').
+    :return: None
+    """
+    try:
+        # Сохранение данных в CSV
+        data.to_csv(filename, index=True)
+        print(f"Данные успешно экспортированы в файл: {filename}")
+    except Exception as e:
+        print(f"Ошибка при экспорте данных: {e}")
+
+
 def fetch_stock_data(ticker: str, period: str = '1mo') -> DataFrame:
     """
     Fetches ticker data from yfinance in DataFrame format and returns it.
