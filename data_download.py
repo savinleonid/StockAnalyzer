@@ -2,6 +2,40 @@ import yfinance as yf
 from pandas import DataFrame
 import pandas as pd
 
+def calculate_rsi(data: DataFrame, window: int = 14) -> DataFrame:
+    """
+    Calculates the Relative Strength Index (RSI).
+    :param data: DataFrame: Stock data.
+    :param window: int: Lookback period for RSI (default is 14).
+    :return: DataFrame: Updated data with RSI column.
+    """
+    if len(data) < window:
+        raise ValueError(f"Недостаточно данных для расчёта RSI: требуется минимум {window} записей.")
+
+    delta = data['Close'].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
+
+    rs = gain / loss
+    data['RSI'] = 100 - (100 / (1 + rs))
+    data['RSI'] = data['RSI'].fillna(0)  # Заполняем NaN значениями по умолчанию (например, 0)
+    return data
+
+
+def calculate_macd(data: DataFrame, short_window: int = 12, long_window: int = 26, signal_window: int = 9) -> DataFrame:
+    """
+    Calculates the MACD and Signal Line.
+    :param data: DataFrame: Stock data.
+    :param short_window: int: Short-term EMA period (default is 12).
+    :param long_window: int: Long-term EMA period (default is 26).
+    :param signal_window: int: Signal line EMA period (default is 9).
+    :return: DataFrame: Updated data with MACD and Signal Line columns.
+    """
+    data['EMA12'] = data['Close'].ewm(span=short_window, adjust=False).mean()
+    data['EMA26'] = data['Close'].ewm(span=long_window, adjust=False).mean()
+    data['MACD'] = data['EMA12'] - data['EMA26']
+    data['Signal_Line'] = data['MACD'].ewm(span=signal_window, adjust=False).mean()
+    return data
 
 def export_data_to_csv(data: DataFrame, filename: str = "stock_data.csv"):
     """

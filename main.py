@@ -51,6 +51,14 @@ def main():
         # Экспорт данных в CSV
         csv_filename = f"{ticker}_{period}_data.csv"
         dd.export_data_to_csv(stock_data, csv_filename)
+
+        # Расчёт технических индикаторов
+        stock_data = dd.calculate_rsi(stock_data)
+        stock_data = dd.calculate_macd(stock_data)
+
+        # Построение графика с индикаторами
+        indicator_filename = f"{ticker}_{period}_indicators_chart.png"
+        dplt.create_and_save_plot_with_indicators(stock_data, ticker, period, indicator_filename)
     except Exception as e:
         print(f"Ошибка обработки данных: {e}")
         return
