@@ -4,64 +4,76 @@ import data_plotting as dplt
 
 def main():
     """
-    Добро пожаловать в инструмент получения и построения графиков биржевых данных.
-
-    Вот несколько примеров биржевых тикеров, которые вы можете рассмотреть:
-    AAPL (Apple Inc),
-    GOOGL (Alphabet Inc),
-    MSFT (Microsoft Corporation),
-    AMZN (Amazon.com Inc),
-    TSLA (Tesla Inc).
-
-    Общие периоды времени для данных о запасах включают:
-    1д, 5д, 1мес, 3мес, 6мес, 1г, 2г, 5г, 10л, с начала года, макс.
+    Добро пожаловать в инструмент анализа и визуализации биржевых данных.
+    Вы можете выбрать предустановленный период (например, '1mo', '6mo', '1y')
+    или указать конкретные даты начала и окончания анализа.
     """
-    print(main.__doc__)  # print documentation
-
-    # Получение данных от пользователя
-    ticker = input("Введите тикер акции (например, «AAPL» для Apple Inc): ").strip().upper()
-    period = input("Введите период для данных (например, '1mo' для одного месяца): ").strip().lower()
+    print(main.__doc__)  # Выводим документацию
 
     try:
-        # Загрузка данных акций
-        stock_data = dd.fetch_stock_data(ticker, period)
+        # Ввод тикера
+        ticker = input("Введите тикер акции (например, 'AAPL' для Apple Inc): ").strip().upper()
+        if not ticker:
+            raise ValueError("Тикер не может быть пустым!")
 
-        # Проверка, что данные не пусты
+        # Выбор периода
+        period_choice = input("Хотите использовать предустановленный период? (да/нет): ").strip().lower()
+        if period_choice == 'да':
+            period = input("Введите период (например, '1mo', '6mo', '1y'): ").strip().lower()
+            if not period:
+                raise ValueError("Период не может быть пустым!")
+            start_date = None
+            end_date = None
+        else:
+            start_date = input("Введите начальную дату (в формате YYYY-MM-DD): ").strip()
+            end_date = input("Введите конечную дату (в формате YYYY-MM-DD): ").strip()
+            if not start_date or not end_date:
+                raise ValueError("Начальная и конечная даты не могут быть пустыми!")
+            period = None
+
+        # Загрузка данных
+        stock_data = dd.fetch_stock_data(ticker, period=period, start_date=start_date, end_date=end_date)
         if stock_data.empty:
-            print(f"Данные для тикера '{ticker}' за период '{period}' не найдены. Проверьте ввод.")
-            return
-    except Exception as e:
-        print(f"Ошибка загрузки данных: {e}")
-        return
+            raise ValueError("Не удалось загрузить данные. Проверьте тикер и даты.")
 
-    try:
-        # Добавление скользящего среднего
-        stock_data = dd.add_moving_average(stock_data)
+        # Остальные шаги с обработкой ошибок
+        try:
+            stock_data = dd.add_moving_average(stock_data)
+            stock_data = dd.calculate_rsi(stock_data)
+            stock_data = dd.calculate_macd(stock_data)
+        except Exception as e:
+            print(f"Ошибка при расчёте индикаторов: {e}")
+            return
 
         # Вывод средней цены
         dd.calculate_and_display_average_price(stock_data)
 
-        # Уведомление о сильных колебаниях
-        dd.notify_if_strong_fluctuations(stock_data, 5.0)
+        # Уведомление о колебаниях
+        try:
+            dd.notify_if_strong_fluctuations(stock_data, threshold=5.0)
+        except Exception as e:
+            print(f"Ошибка при уведомлении о колебаниях: {e}")
 
-        # Построение графика и сохранение
-        filename = f"{ticker}_{period}_stock_chart.png"
-        dplt.create_and_save_plot(stock_data, ticker, period, filename)
+        # Построение графика
+        try:
+            filename = f"{ticker}_custom_chart.png"
+            dplt.create_and_save_plot_with_indicators(stock_data, ticker, "custom", filename)
+            print(f"График сохранён как {filename}")
+        except Exception as e:
+            print(f"Ошибка при создании графика: {e}")
 
-        # Экспорт данных в CSV
-        csv_filename = f"{ticker}_{period}_data.csv"
-        dd.export_data_to_csv(stock_data, csv_filename)
+        # Экспорт данных
+        try:
+            export_filename = f"{ticker}_custom_data.csv"
+            dd.export_data_to_csv(stock_data, export_filename)
+            print(f"Данные сохранены в файл: {export_filename}")
+        except Exception as e:
+            print(f"Ошибка при экспорте данных: {e}")
 
-        # Расчёт технических индикаторов
-        stock_data = dd.calculate_rsi(stock_data)
-        stock_data = dd.calculate_macd(stock_data)
-
-        # Построение графика с индикаторами
-        indicator_filename = f"{ticker}_{period}_indicators_chart.png"
-        dplt.create_and_save_plot_with_indicators(stock_data, ticker, period, indicator_filename)
+    except ValueError as ve:
+        print(f"Ошибка ввода: {ve}")
     except Exception as e:
-        print(f"Ошибка обработки данных: {e}")
-        return
+        print(f"Произошла непредвиденная ошибка: {e}")
 
 
 if __name__ == "__main__":

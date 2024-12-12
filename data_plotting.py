@@ -3,46 +3,9 @@ import pandas as pd
 from pandas import DataFrame
 
 
-def create_and_save_plot(data: DataFrame, ticker: str, period: str, filename: str = None):
-    """
-    Creates and plots graph for ticker in given period and saves in PNG format.
-    :param data: Dataframe
-    :param ticker: str
-    :param period: str
-    :param filename: str
-    :return: None
-    """
-    plt.figure(figsize=(10, 6))
-
-    if 'Date' not in data:
-        if pd.api.types.is_datetime64_any_dtype(data.index):
-            dates = data.index.to_numpy()
-            plt.plot(dates, data['Close'].values, label='Close Price')
-            plt.plot(dates, data['Moving_Average'].values, label='Moving Average')
-        else:
-            print("Информация о дате отсутствует или не имеет распознаваемого формата.")
-            return
-    else:
-        if not pd.api.types.is_datetime64_any_dtype(data['Date']):
-            data['Date'] = pd.to_datetime(data['Date'])
-        plt.plot(data['Date'], data['Close'], label='Close Price')
-        plt.plot(data['Date'], data['Moving_Average'], label='Moving Average')
-
-    plt.title(f"{ticker} Цена акций с течением времени")
-    plt.xlabel("Дата")
-    plt.ylabel("Цена")
-    plt.legend()
-
-    # standard naming if not provided
-    if filename is None:
-        filename = f"{ticker}_{period}_stock_price_chart.png"
-
-    plt.savefig(filename)
-    print(f"График сохранен как {filename}")
-
 def create_and_save_plot_with_indicators(data: DataFrame, ticker: str, period: str, filename: str = "stock_chart_with_indicators.png"):
     """
-    Creates a plot with closing prices and additional indicators (RSI and MACD).
+    Creates a plot with closing prices, moving average, and additional indicators (RSI and MACD).
     :param data: DataFrame: Stock data.
     :param ticker: str: Ticker of the stock.
     :param period: str: Period of the stock data.
@@ -51,9 +14,11 @@ def create_and_save_plot_with_indicators(data: DataFrame, ticker: str, period: s
     """
     fig, axs = plt.subplots(3, figsize=(12, 10), sharex=True)
 
-    # Plot closing price
+    # Plot closing price and Moving Average
     axs[0].plot(data['Close'], label='Closing Price', color='blue')
-    axs[0].set_title(f"{ticker} Closing Price")
+    if 'Moving_Average' in data.columns:
+        axs[0].plot(data['Moving_Average'], label='Moving Average', color='orange', linestyle='--')
+    axs[0].set_title(f"{ticker} Closing Price and Moving Average")
     axs[0].legend()
 
     # Plot RSI

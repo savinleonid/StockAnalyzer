@@ -53,16 +53,27 @@ def export_data_to_csv(data: DataFrame, filename: str = "stock_data.csv"):
         print(f"Ошибка при экспорте данных: {e}")
 
 
-def fetch_stock_data(ticker: str, period: str = '1mo') -> DataFrame:
+def fetch_stock_data(ticker: str, period: str = None, start_date: str = None, end_date: str = None):
     """
     Fetches ticker data from yfinance in DataFrame format and returns it.
-    :param ticker: str: Ticker short name (e.g., 'AAPL').
-    :param period: str: Period of data to fetch (e.g., '1mo' for one month).
-    :return: DataFrame: Historical stock data.
+    :param ticker: str: ticker short name (e.g., 'AAPL').
+    :param period: str: pre-set period of data to fetch (e.g., '1mo', default is None).
+    :param start_date: str: start date for data fetch in 'YYYY-MM-DD' format (default is None).
+    :param end_date: str: end date for data fetch in 'YYYY-MM-DD' format (default is None).
+    :return: DataFrame
     """
-    stock = yf.Ticker(ticker)
-    data = stock.history(period=period)
-    return data
+    try:
+        stock = yf.Ticker(ticker)
+        if period:
+            data = stock.history(period=period)
+        elif start_date and end_date:
+            data = stock.history(start=start_date, end=end_date)
+        else:
+            raise ValueError("Either 'period' or both 'start_date' and 'end_date' must be provided.")
+        return data
+    except Exception as e:
+        print(f"Ошибка загрузки данных: {e}")
+        return pd.DataFrame()
 
 
 def add_moving_average(data: DataFrame, window_size: int = 5) -> DataFrame:
