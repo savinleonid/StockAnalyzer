@@ -3,15 +3,23 @@ import pandas as pd
 from pandas import DataFrame
 
 
-def create_and_save_plot_with_indicators(data: DataFrame, ticker: str, period: str, filename: str = "stock_chart_with_indicators.png"):
+def create_and_save_plot_with_indicators(
+    data: DataFrame, ticker: str, period: str,
+    filename: str = "stock_chart_with_indicators.png",
+    style: str = "default"
+):
     """
     Creates a plot with closing prices, moving average, and additional indicators (RSI and MACD).
     :param data: DataFrame: Stock data.
     :param ticker: str: Ticker of the stock.
     :param period: str: Period of the stock data.
     :param filename: str: Name of the file to save the plot (default: 'stock_chart_with_indicators.png').
+    :param style: str: Matplotlib style to use for the plot (default: 'default').
     :return: None
     """
+    # Применяем стиль графика
+    plt.style.use(style)
+
     fig, axs = plt.subplots(3, figsize=(12, 10), sharex=True)
 
     # Plot closing price and Moving Average

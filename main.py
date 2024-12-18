@@ -1,5 +1,19 @@
 import data_download as dd
 import data_plotting as dplt
+import matplotlib.pyplot as plt
+
+
+def validate_style(style):
+    """
+    Проверяет доступность указанного стиля графика.
+    Если стиль недоступен, возвращает 'default'.
+    :param style: str: стиль графика
+    :return: str: корректный стиль
+    """
+    if style not in plt.style.available:
+        print(f"Предупреждение: Стиль '{style}' недоступен. Используется стиль по умолчанию 'default'.")
+        return "default"
+    return style
 
 
 def main():
@@ -7,6 +21,16 @@ def main():
     Добро пожаловать в инструмент анализа и визуализации биржевых данных.
     Вы можете выбрать предустановленный период (например, '1mo', '6mo', '1y')
     или указать конкретные даты начала и окончания анализа.
+
+    Вот несколько примеров биржевых тикеров, которые вы можете рассмотреть:
+    AAPL (Apple Inc),
+    GOOGL (Alphabet Inc),
+    MSFT (Microsoft Corporation),
+    AMZN (Amazon.com Inc),
+    TSLA (Tesla Inc).
+
+    Общие периоды времени для данных о запасах включают:
+    1д, 5д, 1мес, 3мес, 6мес, 1г, 2г, 5г, 10л, с начала года, макс.
     """
     print(main.__doc__)  # Выводим документацию
 
@@ -54,10 +78,15 @@ def main():
         except Exception as e:
             print(f"Ошибка при уведомлении о колебаниях: {e}")
 
+        # Выбор стиля графика
+        print("Доступные стили графиков:", ", ".join(plt.style.available))
+        style = input("Введите стиль графика (например, 'seaborn-v0_8', 'ggplot' или 'default'): ").strip()
+        style = validate_style(style)
+
         # Построение графика
         try:
             filename = f"{ticker}_custom_chart.png"
-            dplt.create_and_save_plot_with_indicators(stock_data, ticker, "custom", filename)
+            dplt.create_and_save_plot_with_indicators(stock_data, ticker, "custom", filename, style=style)
             print(f"График сохранён как {filename}")
         except Exception as e:
             print(f"Ошибка при создании графика: {e}")
