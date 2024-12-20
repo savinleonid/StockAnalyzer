@@ -4,12 +4,13 @@ from pandas import DataFrame
 
 
 def create_and_save_plot_with_indicators(
-    data: DataFrame, ticker: str, period: str,
-    filename: str = "stock_chart_with_indicators.png",
-    style: str = "default"
+        data: DataFrame, ticker: str, period: str,
+        filename: str = "stock_chart_with_indicators.png",
+        style: str = "default"
 ):
     """
-    Creates a plot with closing prices, moving average, and additional indicators (RSI and MACD).
+    Creates a plot with closing prices, moving average, and additional indicators (RSI and MACD),
+    including standard deviation bands around the moving average.
     :param data: DataFrame: Stock data.
     :param ticker: str: Ticker of the stock.
     :param period: str: Period of the stock data.
@@ -26,7 +27,17 @@ def create_and_save_plot_with_indicators(
     axs[0].plot(data['Close'], label='Closing Price', color='blue')
     if 'Moving_Average' in data.columns:
         axs[0].plot(data['Moving_Average'], label='Moving Average', color='orange', linestyle='--')
-    axs[0].set_title(f"{ticker} Closing Price and Moving Average")
+
+        # Добавляем полосы стандартного отклонения вокруг скользящего среднего
+        std_dev = data['Close'].std()
+        axs[0].fill_between(
+            data.index,
+            data['Moving_Average'] - std_dev,
+            data['Moving_Average'] + std_dev,
+            color='gray', alpha=0.2, label='Standard Deviation Bands'
+        )
+
+    axs[0].set_title(f"{ticker} Closing Price, Moving Average, and Standard Deviation Bands")
     axs[0].legend()
 
     # Plot RSI
@@ -47,4 +58,3 @@ def create_and_save_plot_with_indicators(
     plt.tight_layout()
     plt.savefig(filename)
     plt.show()
-    print(f"График с индикаторами сохранён как {filename}")

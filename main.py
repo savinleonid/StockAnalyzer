@@ -78,6 +78,13 @@ def main():
         except Exception as e:
             print(f"Ошибка при уведомлении о колебаниях: {e}")
 
+        # Расчёт стандартного отклонения
+        try:
+            std_dev = dd.calculate_standard_deviation(stock_data)
+            print(f"Стандартное отклонение цены закрытия: {std_dev:.2f}")
+        except Exception as e:
+            print(f"Ошибка при расчёте стандартного отклонения: {e}")
+
         # Выбор стиля графика
         print("Доступные стили графиков:", ", ".join(plt.style.available))
         style = input("Введите стиль графика (например, 'seaborn-v0_8', 'ggplot' или 'default'): ").strip()
@@ -95,7 +102,6 @@ def main():
         try:
             export_filename = f"{ticker}_custom_data.csv"
             dd.export_data_to_csv(stock_data, export_filename)
-            print(f"Данные сохранены в файл: {export_filename}")
         except Exception as e:
             print(f"Ошибка при экспорте данных: {e}")
 

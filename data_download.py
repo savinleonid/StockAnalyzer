@@ -2,6 +2,7 @@ import yfinance as yf
 from pandas import DataFrame
 import pandas as pd
 
+
 def calculate_rsi(data: DataFrame, window: int = 14) -> DataFrame:
     """
     Calculates the Relative Strength Index (RSI).
@@ -36,6 +37,7 @@ def calculate_macd(data: DataFrame, short_window: int = 12, long_window: int = 2
     data['MACD'] = data['EMA12'] - data['EMA26']
     data['Signal_Line'] = data['MACD'].ewm(span=signal_window, adjust=False).mean()
     return data
+
 
 def export_data_to_csv(data: DataFrame, filename: str = "stock_data.csv"):
     """
@@ -123,3 +125,16 @@ def notify_if_strong_fluctuations(data: DataFrame, threshold: float) -> float:
         print(f"Колебания цены составили {fluctuation:.2f}%, что ниже порога {threshold}%.")
 
     return fluctuation
+
+
+def calculate_standard_deviation(data: pd.DataFrame):
+    """
+    Рассчитывает стандартное отклонение цены закрытия акций.
+    :param data: DataFrame: Данные с биржи.
+    :return: float: Стандартное отклонение.
+    """
+    if 'Close' not in data.columns:
+        raise ValueError("The DataFrame does not contain a 'Close' column.")
+
+    std_dev = data['Close'].std()
+    return std_dev
