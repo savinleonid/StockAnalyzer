@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas import DataFrame
+import plotly.graph_objects as go
 
 
 def create_and_save_plot_with_indicators(
@@ -58,3 +59,32 @@ def create_and_save_plot_with_indicators(
     plt.tight_layout()
     plt.savefig(filename)
     plt.show()
+
+def create_interactive_plot(data, ticker, filename="interactive_chart.html"):
+    """
+    Создаёт интерактивный график с использованием Plotly.
+    :param data: DataFrame: Данные с индикаторами.
+    :param ticker: str: Название тикера.
+    :param filename: str: Имя файла для сохранения графика (по умолчанию: 'interactive_chart.html').
+    :return: None
+    """
+    fig = go.Figure()
+
+    # Добавление цен закрытия
+    fig.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Closing Price'))
+
+    # Добавление скользящего среднего
+    if 'Moving_Average' in data.columns:
+        fig.add_trace(go.Scatter(x=data.index, y=data['Moving_Average'], mode='lines', name='Moving Average'))
+
+    # Настройка графика
+    fig.update_layout(
+        title=f"{ticker} Interactive Chart",
+        xaxis_title="Date",
+        yaxis_title="Price",
+        template="plotly_dark"
+    )
+
+    # Сохранение графика
+    fig.write_html(filename)
+    print(f"Интерактивный график сохранён как {filename}")

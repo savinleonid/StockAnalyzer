@@ -105,6 +105,13 @@ def main():
         except Exception as e:
             print(f"Ошибка при экспорте данных: {e}")
 
+        # Построение интерактивного графика
+        try:
+            interactive_filename = f"{ticker}_interactive_chart.html"
+            dplt.create_interactive_plot(stock_data, ticker, filename=interactive_filename)
+        except Exception as e:
+            print(f"Ошибка при создании интерактивного графика: {e}")
+
     except ValueError as ve:
         print(f"Ошибка ввода: {ve}")
     except Exception as e:
