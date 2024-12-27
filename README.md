@@ -4,8 +4,6 @@
 
 ---
 ![AAPL_custom_chart.png](AAPL_custom_chart.png)
-
-[TSLS_interactive_chart.html](TSLS_interactive_chart.html)  <-- TRY IT
 ---
 
 ## Основные функции
